@@ -489,8 +489,10 @@ g_stripe_start_economic(struct bio *bp, u_int no, off_t offset, off_t length)
 		cbp->bio_length = MIN(stripesize, length);
 		if ((bp->bio_flags & BIO_UNMAPPED) != 0) {
 			cbp->bio_ma_offset += (uintptr_t)addr;
-			cbp->bio_ma += cbp->bio_ma_offset / PAGE_SIZE;
-			cbp->bio_ma_offset %= PAGE_SIZE;
+			/* cbp->bio_ma += cbp->bio_ma_offset / PAGE_SIZE; */
+			cbp->bio_ma += atop(cbp->bio_ma_offset);
+			/* cbp->bio_ma_offset %= PAGE_SIZE; */
+			cbp->bio_ma_offset &= PAGE_MASK;
 			cbp->bio_ma_n = round_page(cbp->bio_ma_offset +
 			    cbp->bio_length) / PAGE_SIZE;
 		} else
